@@ -26,7 +26,7 @@ class EventController extends AbstractController
     public function index(): Response
     {
         return $this->render('backend/event/index.html.twig', [
-            'controller_name' => 'EventController',
+            'events' => $this->eventRepo->findAll()
         ]);
     }
 
@@ -37,6 +37,15 @@ class EventController extends AbstractController
         $form = $this->createForm(EventType::class,$event);
         $form->handleRequest($request);
         if($form->isSubmitted()&&$form->isValid()){
+
+            $dateEvenement = $event->getStartDate(); // Supposons que la date soit stockée dans l'objet Event
+            $dateActuelle = new \DateTime();
+
+        if ($dateEvenement < $dateActuelle) {
+            $this->addFlash('error', 'La date de l\'événement ne peut pas être antérieure à la date actuelle');
+            return $this->redirectToRoute('admin.event.create'); // Rediriger vers le formulaire de création avec un message d'erreur
+        }
+
             $this->em->persist($event);
             $this->em->flush();
 
@@ -46,7 +55,10 @@ class EventController extends AbstractController
 
 
         return $this->render('Backend/Event/create.html.twig', [
-            'form' => $form
+            'form' => $form,
+            'events'=>$this->eventRepo->findFutureEvents()
         ]);
     }
+
+    
 }

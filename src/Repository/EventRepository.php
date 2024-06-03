@@ -19,6 +19,17 @@ class EventRepository extends ServiceEntityRepository
     //    /**
     //     * @return Event[] Returns an array of Event objects
     //     */
+
+    public function findFutureEvents(): array
+    {
+        return $this->createQueryBuilder('e')
+        ->where('e.start_date > :currentDate OR e.end_date > :currentDate') // Date de début future ou date de fin future
+        ->setParameter('currentDate', new \DateTime())
+        ->getQuery()
+        ->getResult();
+    }
+
+
     //    public function findByExampleField($value): array
     //    {
     //        return $this->createQueryBuilder('e')

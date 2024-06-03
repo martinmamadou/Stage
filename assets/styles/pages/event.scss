@@ -1,0 +1,20 @@
+.event-list{
+    width: 90vw;
+    margin: 0 auto;
+
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        grid-column-gap: 10px;
+        grid-row-gap: 10px;
+        
+        
+    .event-item{
+        height: 70px;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: $box-shadow;
+        background: red;
+    }
+}
+

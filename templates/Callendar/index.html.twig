@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello TestController!{% endblock %}
+
+{% block body %}
+<pre>
+    {{ dump(data) }}
+</pre>
+
+<div id='calendrier'></div>
+
+
+
+        <script>
+        window.onload = () => {
+            let calendarElt = document.querySelector("#calendrier")
+
+            let calendar = new FullCalendar.Calendar(calendarElt,{
+                initialView:'dayGridMonth',
+                locale:'fr',
+                timeZone: 'Europe/Paris',
+                headerToolbar: {
+                    start: 'prev,next today',
+                    center: 'title',
+                    end:'dayGridMonth, timeGridWeek'
+                },
+                events:{{data|raw}},
+                selectConstraint: {
+            // Fonction de contrainte pour empêcher la sélection de dates antérieures
+                start: new Date, // La date actuelle
+                message: 'Impossible de sélectionner une date passée' // Message d'erreur affiché à l'utilisateur
+        }
+            })
+            calendar.render()
+            }
+        </script>
+{% endblock %}

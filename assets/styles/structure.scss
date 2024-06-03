@@ -9,8 +9,11 @@ a{
     color: black;
     text-decoration: none;
 }
-h1, h2 {
+h1, h2, h3 {
     text-align: center;
+}
+h1{
+    margin-bottom: 50px;
 }
 
 #center-form{
@@ -54,4 +57,7 @@ input{
     button{
         width: 50%;
     }
+}
+.content{
+    margin-top: 50px;
 }
