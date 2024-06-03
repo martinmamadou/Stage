@@ -18,5 +18,9 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "fullcalendar": "^6.1.13",
+        "fullcalendar-scheduler": "^6.1.13"
     }
 }
