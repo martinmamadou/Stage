@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h1>Connexion</h1>
+    <div id="center-form">
+    <form action="{{ path('app.login') }}" method="post">
+
+		<label for="email"></label>
+		<input
+		class="input" name="_username" value="{{ lastUsername }}" type="text" value="" placeholder="email">
+		<!-- lastUser...= pour garder l'email dans l'input -->
+
+		<label for="password"></label>
+		<input class="input" name="_password" type="password" placeholder="mot-de-passe">
+		<div>
+			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+			<button type="submit" class="btn-ok">Connexion</button>
+		</div>
+	</form>
+    </div>
+{% endblock %}

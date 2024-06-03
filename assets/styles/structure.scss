@@ -1,14 +1,22 @@
 *{
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
+
+html {
+    scroll-behavior: smooth;
+}
+
 li{
     list-style: none;
 }
+
 a{
     color: black;
     text-decoration: none;
 }
+
 h1, h2 {
     text-align: center;
 }
@@ -32,7 +40,6 @@ label{
     font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 20px;
-    color: $text-color;
 }
 
 input,textarea{
