@@ -3,14 +3,10 @@
 {% block title %}Hello TestController!{% endblock %}
 
 {% block body %}
-<pre>
-    {{ dump(data) }}
-</pre>
-
+<section class="content">
+<h1>Les Deplacements</h1>
 <div id='calendrier'></div>
-
-
-
+        
         <script>
         window.onload = () => {
             let calendarElt = document.querySelector("#calendrier")
@@ -34,4 +30,5 @@
             calendar.render()
             }
         </script>
+    </section>
 {% endblock %}

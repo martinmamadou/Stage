@@ -3,12 +3,14 @@
 namespace App\Form;
 
 use App\Entity\Event;
+use App\Entity\Client;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EventType extends AbstractType
 {
@@ -22,14 +24,12 @@ class EventType extends AbstractType
                'placeholder' => 'mon super titre'
                ]
             ])
-            ->add('start_date', DateTimeType::class,[
-                'label' => 'Date de Depart',
-                'required' => false 
+            ->add('client',EntityType::class,[
+                'label' => 'Client',
+                'class' => Client::class,
+                'choice_label' => 'name'
             ])
-            ->add('end_date', DateTimeType::class,[
-                'label' => 'Date de Retour',
-                'required' => false 
-            ])
+         
             ->add('color', ColorType::class, [
                 'label' => 'couleur',
                 'required' => false,
@@ -43,6 +43,14 @@ class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => 'ma super description'
                 ]
+            ])
+            ->add('start_date', DateTimeType::class,[
+                'label' => 'Date de Depart',
+                'required' => false 
+            ])
+            ->add('end_date', DateTimeType::class,[
+                'label' => 'Date de Retour',
+                'required' => false 
             ])
         ;
     }

@@ -10,11 +10,16 @@
         
         
     .event-item{
-        height: 70px;
+        height: 200px;
         border-radius: 8px;
         padding: 10px;
         box-shadow: $box-shadow;
         background: red;
     }
+}
+
+#calendrier{
+    width: 80%;
+    margin: 0 auto;
 }
 

@@ -7,11 +7,15 @@
 {% block body %}
 <section class="content">
     <h1>Liste des deplacements</h1>
+    <pre>
+        {{ dump(events) }}
+    </pre>
     <div class="event-list">
     {% for event in events %}
         <div class="event-item" style='background-color:{{event.color}}'>
             <h3>{{event.titre}}</h3>
             <p>{{event.description}}</p>
+            <p>{{event.client.name}}</p>
         </div>
     {% endfor %}
     </div>

@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+	Gestion des utilisateurs
+{% endblock %}
+
+{% block body %}
+	<div>
+		<a href="{{ path('admin.users.create') }}" class="btn-ok" style="color: blue">Nouvel utilisateur</a>
+	</div>
+	{% for user in users %}
+		<div>{{ user.firstName }}</div>
+		<div>{{ user.lastName }}</div>
+		
+		<div>
+			<a href="{{ path('admin.users.edit', {id: user.id}) }}">Modifier</a>
+			<form action="{{ path('admin.users.delete', {id: user.id}) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce user')">
+				<input type="hidden" name="token" value="{{ csrf_token('delete'~ user.id) }}">
+				<button type="submit">Supprimer</button>
+			</form>
+		</div>
+	{% endfor %}
+{% endblock %}

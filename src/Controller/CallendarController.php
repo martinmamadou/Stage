@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CallendarController extends AbstractController
 {
-    #[Route('/test', name: 'app_test')]
+    #[Route('', name: 'app_test')]
     public function index(EventRepository $eventrepo): Response
     {
         $events = $eventrepo->findFutureEvents();
