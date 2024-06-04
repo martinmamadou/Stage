@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Event;
 use App\Entity\Client;
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -28,6 +29,11 @@ class EventType extends AbstractType
                 'label' => 'Client',
                 'class' => Client::class,
                 'choice_label' => 'name'
+            ])
+            ->add('user',EntityType::class,[
+                'label' => 'Collaborateur',
+                'class' => User::class,
+                'choice_label' => 'firstName'
             ])
          
             ->add('color', ColorType::class, [

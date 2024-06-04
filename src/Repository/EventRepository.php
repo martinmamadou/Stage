@@ -23,11 +23,11 @@ class EventRepository extends ServiceEntityRepository
     public function findFutureEvents(): array
     {
         return $this->createQueryBuilder('e')
-        ->where('e.start_date > :currentDate OR e.end_date > :currentDate') // Date de début future ou date de fin future
-        ->setParameter('currentDate', new \DateTime())
-        ->getQuery()
-        ->getResult();
+            ->where('e.start_date > CURRENT_TIMESTAMP()') // Événements dont la date de début est dans le futur
+            ->getQuery()
+            ->getResult();
     }
+
 
 
     //    public function findByExampleField($value): array

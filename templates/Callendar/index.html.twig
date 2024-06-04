@@ -5,8 +5,19 @@
 {% block body %}
 <section class="content">
 <h1>Les Deplacements</h1>
-<div id='calendrier'></div>
-        
+<div class='all'>
+<div class='left'>
+  <pre>
+        {{ dump(_context) }}
+    </pre>
+{% for user in users %}
+    <div class='user-list' style:''>
+  
+    <h3>{{user.firstname}} {{user.lastname}}</h3>
+    </div>
+{% endfor %}
+</div>
+<div id='calendrier'>
         <script>
         window.onload = () => {
             let calendarElt = document.querySelector("#calendrier")
@@ -30,5 +41,7 @@
             calendar.render()
             }
         </script>
+        </div>
+    </div>
     </section>
 {% endblock %}
