@@ -30,29 +30,35 @@ class UserController extends AbstractController
         ]);
     }
 
+   
+
     #[Route('/create', name: '.create', methods: ['GET', 'POST'])]
-    public function create(Request $request, EntityManagerInterface $em): Response 
+    public function register(Request $request, EntityManagerInterface $em): Response|RedirectResponse
     {
         $user = new User();
 
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
+        
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword($this->hasher->hashPassword($user, $form->get('password')->getData()));
+            
+            $user
+            ->setFirstlog(true)
+            ->setPassword($this->hasher->hashPassword($user, $form->get('password')->getData()));
 
             $em->persist($user);
             $em->flush();
 
-            $this->addFlash('success', 'Utilisateur créer avec succès.');
+            $this->addFlash('success', 'Compte créer avec succès.');
 
-            return $this->redirectToRoute('admin.users.index');
+            return $this->redirectToRoute('app.login');
         }
 
-        return $this->render('register.html.twig', [
+        return $this->render('Backend/User/create.html.twig', [
             'form' => $form,
         ]);
-    } 
+    }
 
     #[Route('/{id}/edit', name: '.edit', methods: ['GET', 'POST'])]
     public function edit(?User $user, Request $request): Response|RedirectResponse

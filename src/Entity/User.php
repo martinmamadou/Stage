@@ -51,6 +51,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'user')]
     private Collection $events;
 
+    #[ORM\Column]
+    private ?bool $firstlog = null;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -181,6 +184,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $event->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isFirstlog(): ?bool
+    {
+        return $this->firstlog;
+    }
+
+    public function setFirstlog(bool $firstlog): static
+    {
+        $this->firstlog = $firstlog;
 
         return $this;
     }

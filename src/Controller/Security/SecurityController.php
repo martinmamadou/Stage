@@ -10,7 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -18,38 +20,58 @@ class SecurityController extends AbstractController
 {
     public function __construct(
         private UserPasswordHasherInterface $hasher,
+        private readonly EntityManagerInterface $em,
+        private UserRepository $userRepo,
     ) {}
 
-    #[Route('/register', name: 'app.register', methods: ['GET', 'POST'])]
-    public function register(Request $request, EntityManagerInterface $em): Response|RedirectResponse
-    {
-        $user = new User();
-
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword($this->hasher->hashPassword($user, $form->get('password')->getData()));
-
-            $em->persist($user);
-            $em->flush();
-
-            $this->addFlash('success', 'Compte créer avec succès.');
-
-            return $this->redirectToRoute('app.login');
-        }
-
-        return $this->render('register.html.twig', [
-            'form' => $form,
-        ]);
-    }
+   
 
     #[Route('/login', name: 'app.login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authUtils): Response
     {
+        // Récupérer les erreurs de connexion
+        $error = $authUtils->getLastAuthenticationError();
+        // Récupérer le dernier nom d'utilisateur saisi
+        $lastUsername = $authUtils->getLastUsername();
+
+        // Rendre la vue du formulaire de connexion
         return $this->render('login.html.twig', [
-            'error' => $authUtils->getLastAuthenticationError(),
-            'lastUsername' => $authUtils->getLastUsername(),
+            'error' => $error,
+            'lastUsername' => $lastUsername
         ]);
     }
-}
+
+
+    
+    #[Route('/password',name: 'app.password',methods:['GET','POST'])]
+    public function password(?User $user, Request $request){
+        
+       
+        $user= $this->getUser();
+        if(!$user->isFirstlog()){
+            return $this->redirectToRoute('app_test');
+        }
+    
+        $form = $this->createForm(UserType::class, $user, ['firstLogin' => true]);
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+    
+            $user
+            ->setPassword($this->hasher->hashPassword($user, $form->get('password')->getData()))
+            ->setFirstlog(false);
+            
+
+            $this->em->persist($user);
+            $this->em->flush();
+    
+            $this->addFlash('success', 'Utilisateur mis à jour.');
+    
+            return $this->redirectToRoute('app_test');
+        }
+    
+        return $this->render('password.html.twig', [
+            'form' => $form,
+        ]);
+    }
+}    

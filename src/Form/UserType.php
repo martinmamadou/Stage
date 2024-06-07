@@ -30,12 +30,15 @@ class UserType extends AbstractType
                 'required' => false,
                 'attr' => ['placeholder' => 'Email'],
             ])
+            
             ->add('password', RepeatedType::class, [
                 'required' => false,
                 'first_options' => [
+                    'label' => 'mot de passe',
                     'attr' => ['placeholder' => 'Mot de passe'],
                 ], 
                 'second_options' => [
+                    'label' => 'confirmation mot de passe',
                     'attr' => ['placeholder' => 'Confirmer mot de passe'],
                 ],
                 'type' => PasswordType::class,
@@ -61,6 +64,14 @@ class UserType extends AbstractType
                 ],
                 'multiple' => true,
             ]);
+
+           
+        }
+        if ($options['firstLogin']){
+            $builder
+            ->remove('firstName')
+            ->remove('lastName')
+            ->remove('email');
         }
     }
 
@@ -69,6 +80,7 @@ class UserType extends AbstractType
         $resolver->setDefaults([
             'data_class' => User::class,
             'isAdmin' => false,
+            'firstLogin' => false,
         ]);
     }
 }

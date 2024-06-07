@@ -39,7 +39,8 @@ class CallendarController extends AbstractController
 
         $data = empty($rdvs) ? '[]' : json_encode($rdvs);        
         return $this->render('Callendar/index.html.twig',['data'=>$data,
-        'users' => $users
+        'users' => $users,
+        'events' => $events
         ]
         );
     }

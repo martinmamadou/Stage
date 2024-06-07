@@ -7,15 +7,19 @@
 <h1>Les Deplacements</h1>
 <div class='all'>
 <div class='left'>
-  <pre>
-        {{ dump(_context) }}
-    </pre>
+    <h2>Collaborateurs</h2>
+    
 {% for user in users %}
     <div class='user-list' style:''>
   
     <h3>{{user.firstname}} {{user.lastname}}</h3>
+
+
+    
     </div>
+    
 {% endfor %}
+    <button>Ajouter</button>
 </div>
 <div id='calendrier'>
         <script>
