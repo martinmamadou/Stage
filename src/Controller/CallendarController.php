@@ -18,12 +18,16 @@ class CallendarController extends AbstractController
 
     }
 
-    #[Route('', name: 'app_test')]
+    #[Route('', name: 'app.home', methods:['GET'])]
     public function index(): Response
     {
+        $user= $this->getUser();
+        if(!$user){
+            return $this->redirectToRoute('app.login');
+        }
+
         $events = $this->eventRepo->findFutureEvents();
-        $users = $this->userRepo->findAll();
-    
+        
         foreach($events as $event){
             $rdvs[] = [
                 'id' => $event->getId(),
@@ -32,14 +36,14 @@ class CallendarController extends AbstractController
                 'title' => $event->getTitre(),
                 'backgroundColor' => $event->getColor(),
                 'description' => $event->getDescription(),
-                
+                'user' => $event->getUser(),
             ];
             
         }
 
         $data = empty($rdvs) ? '[]' : json_encode($rdvs);        
         return $this->render('Callendar/index.html.twig',['data'=>$data,
-        'users' => $users,
+        'users' => $this->userRepo->findAll(),
         'events' => $events
         ]
         );

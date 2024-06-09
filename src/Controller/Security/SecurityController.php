@@ -49,7 +49,7 @@ class SecurityController extends AbstractController
        
         $user= $this->getUser();
         if(!$user->isFirstlog()){
-            return $this->redirectToRoute('app_test');
+            return $this->redirectToRoute('app.home');
         }
     
         $form = $this->createForm(UserType::class, $user, ['firstLogin' => true]);

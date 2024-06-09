@@ -4,48 +4,63 @@
 
 {% block body %}
 <section class="content">
-<h1>Les Deplacements</h1>
+<h1>Planning</h1>
 <div class='all'>
 <div class='left'>
+    <span class="form"></span>
     <h2>Collaborateurs</h2>
     
 {% for user in users %}
     <div class='user-list' style:''>
+    {% if user.events is not null %}
   
-    <h3>{{user.firstname}} {{user.lastname}}</h3>
-
-
+    {% endif %}
+    
+    
+  
+        <h3>{{user.firstname}} {{user.lastname}}</h3>
     
     </div>
     
 {% endfor %}
-    <button>Ajouter</button>
+    <a href="{{path('admin.users.create') }} " class='button btn-secondaire'>Ajouter</a>
 </div>
 <div id='calendrier'>
-        <script>
-        window.onload = () => {
-            let calendarElt = document.querySelector("#calendrier")
 
-            let calendar = new FullCalendar.Calendar(calendarElt,{
-                initialView:'dayGridMonth',
-                locale:'fr',
-                timeZone: 'Europe/Paris',
-                headerToolbar: {
-                    start: 'prev,next today',
-                    center: 'title',
-                    end:'dayGridMonth, timeGridWeek'
-                },
-                events:{{data|raw}},
-                selectConstraint: {
-            // Fonction de contrainte pour empêcher la sélection de dates antérieures
-                start: new Date, // La date actuelle
+    <script>
+    window.onload = () => {
+        let calendarElt = document.querySelector("#calendrier")
+
+        let calendar = new FullCalendar.Calendar(calendarElt,{
+             themeSystem: 'bootstrap5',
+            initialView:'dayGridMonth',
+            locale:'fr',
+            timeZone: 'Europe/Paris',
+            headerToolbar: {
+                start: 'prev,next today',
+                center: 'title',
+                end:'dayGridMonth, timeGridWeek,listWeek'
+            },
+            events:{{data|raw}},
+            selectConstraint: {
+                start: new Date(), // La date actuelle
                 message: 'Impossible de sélectionner une date passée' // Message d'erreur affiché à l'utilisateur
-        }
-            })
-            calendar.render()
+            },
+            editable: true, // Activer le glisser-déposer
+            eventDrop: function(info) {
+                // Action à effectuer lorsqu'un événement est déplacé
+                console.log('Événement déplacé:', info.event);
+                // Vous pouvez ajouter ici la logique pour enregistrer le déplacement de l'événement sur le serveur
             }
-        </script>
+        });
+        
+        calendar.render();
+    }
+</script>
+        
+        <a href="{{path('admin.event.create')}}" class='button btn-secondaire'>Ajouter un Deplacement</a>
         </div>
     </div>
     </section>
+  
 {% endblock %}

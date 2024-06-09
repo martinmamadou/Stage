@@ -50,7 +50,7 @@ class EventController extends AbstractController
             $this->em->flush();
 
             $this->addFlash('success','ajout d\'evenement reussi');
-            return $this->redirectToRoute('app_test');
+            return $this->redirectToRoute('app.home');
         }
 
 
