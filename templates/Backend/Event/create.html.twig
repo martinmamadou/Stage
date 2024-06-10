@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block Title %}
+    Ajout d'évènement
+{% endblock %}
+
+{% block body %}
+    <section class="content">
+        <h1>Ajout d'évènement</h1>
+        <div id="center-form">
+        {{form_start(form)}}
+        {{form_widget(form)}}
+        <div class="btn-container">
+        <button type="submit">ajouter</button>
+        </div>
+        {{form_end(form)}}
+        </div>
+    </section>
+{% endblock %}

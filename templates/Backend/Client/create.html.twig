@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Ajout de clients
+{% endblock %}
+
+{% block body %}
+    <section class="content">
+        <h1>Ajout de client</h1>
+
+        <div id="center-form">
+            {{form_start(form)}}
+            {{form_widget(form)}}
+            <div class="btn-container">
+                <button type="submit">Ajouter</button>
+            </div>
+            {{form_end(form)}}
+        </div>
+    </section>
+{% endblock %}

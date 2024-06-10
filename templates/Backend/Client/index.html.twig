@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<section class="mt-4">
+		<h1 class="text-center">admin des clients</h1>
+		<a href="" class="button btn-secondaire">
+			<i class="bi bi-chat-text"></i>Acceuil</a>
+			<a href="{{path('admin.client.create')}}" class='button btn-secondaire'>Ajouter</a>
+		<table class="table table-striped table-bordered" data-toggle="table" data-sort-name="fullName" data-sort-order="asc" data-pagination="true" data-search="true" data-show-columns="true">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for client in clients %}
+					<tr>
+						<td>{{client.name}}</td>
+						{#<td scope="col">
+							<div class="d-flex gap-2">
+								<a href="{{ path('admin.programmes.edit', {id: programme.id}) }}" class="btn btn-primaire">Modifier</a>
+								<form action="{{ path('admin.programmes.delete', {id: programme.id}) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce programme')">
+									<input type="hidden" name="token" value="{{ csrf_token('delete'~ programme.id) }}">
+									<button type="submit" class="btn btn-danger">Supprimer</button>
+								</form>
+							</div>
+						</td>#}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+{% endblock %}
+

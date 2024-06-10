@@ -1,16 +1,39 @@
 *{
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
+
+@font-face {
+    font-family: BebasNeue;
+    src: url(../font/BebasNeue-Regular.ttf);
+}
+
+body{
+    background: #DD5E89;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #F7BB97, #DD5E89);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #F7BB97, #DD5E89); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 li{
     list-style: none;
 }
+
 a{
     color: black;
     text-decoration: none;
 }
-h1, h2 {
+h1, h2, h3 {
     text-align: center;
+    font-family: BebasNeue;
+}
+h1{
+    margin-bottom: 50px;
 }
 
 #center-form{
@@ -32,7 +55,7 @@ label{
     font-weight: 700;
     text-transform: uppercase;
     margin-bottom: 20px;
-    color: $text-color;
+    
 }
 
 input,textarea{
@@ -54,4 +77,27 @@ input{
     button{
         width: 50%;
     }
+}
+.content{
+    margin-top: 50px;
+}
+
+
+.button{
+    padding: 10px 20px;
+    border-radius:8px;
+    border : solid thin black;
+    background: none;
+    color: black;
+    font-weight: 700;
+}
+
+
+.btn-secondaire{
+    border: solid thin rgb(0, 204, 255);;
+    border-radius: 5px;
+    transition: 0.3s ease;
+    padding: 12px 22px;
+    padding: 12px 22px;
+    
 }
