@@ -36,13 +36,6 @@ class EventType extends AbstractType
                 'choice_label' => 'firstName'
             ])
          
-            ->add('color', ColorType::class, [
-                'label' => 'couleur',
-                'required' => false,
-                'attr' => [
-                    'type' => 'color'
-                ]
-            ])
             ->add('description', TextType::class,[
                 'label' => 'description',
                 'required' => false,

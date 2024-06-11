@@ -54,9 +54,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $firstlog = null;
 
+    /**
+     * @var Collection<int, EmployeeMovement>
+     */
+    #[ORM\OneToMany(targetEntity: EmployeeMovement::class, mappedBy: 'user')]
+    private Collection $employeeMovements;
+
+    #[ORM\Column(length: 255)]
+    private ?string $color = null;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
+        $this->employeeMovements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -196,6 +206,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstlog(bool $firstlog): static
     {
         $this->firstlog = $firstlog;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EmployeeMovement>
+     */
+    public function getEmployeeMovements(): Collection
+    {
+        return $this->employeeMovements;
+    }
+
+    public function addEmployeeMovement(EmployeeMovement $employeeMovement): static
+    {
+        if (!$this->employeeMovements->contains($employeeMovement)) {
+            $this->employeeMovements->add($employeeMovement);
+            $employeeMovement->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmployeeMovement(EmployeeMovement $employeeMovement): static
+    {
+        if ($this->employeeMovements->removeElement($employeeMovement)) {
+            // set the owning side to null (unless already changed)
+            if ($employeeMovement->getUser() === $this) {
+                $employeeMovement->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): static
+    {
+        $this->color = $color;
 
         return $this;
     }

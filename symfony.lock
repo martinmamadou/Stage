@@ -40,6 +40,9 @@
             "tests/bootstrap.php"
         ]
     },
+    "roromix/spreadsheetbundle": {
+        "version": "v2.0.1"
+    },
     "symfony/asset-mapper": {
         "version": "7.1",
         "recipe": {

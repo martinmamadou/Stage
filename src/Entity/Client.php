@@ -35,10 +35,17 @@ class Client
     #[ORM\OneToMany(targetEntity: Site::class, mappedBy: 'client', orphanRemoval: true)]
     private Collection $sites;
 
+    /**
+     * @var Collection<int, EmployeeMovement>
+     */
+    #[ORM\OneToMany(targetEntity: EmployeeMovement::class, mappedBy: 'client')]
+    private Collection $employeeMovements;
+
     public function __construct()
     {
         $this->event = new ArrayCollection();
         $this->sites = new ArrayCollection();
+        $this->employeeMovements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -112,6 +119,36 @@ class Client
             // set the owning side to null (unless already changed)
             if ($site->getClient() === $this) {
                 $site->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EmployeeMovement>
+     */
+    public function getEmployeeMovements(): Collection
+    {
+        return $this->employeeMovements;
+    }
+
+    public function addEmployeeMovement(EmployeeMovement $employeeMovement): static
+    {
+        if (!$this->employeeMovements->contains($employeeMovement)) {
+            $this->employeeMovements->add($employeeMovement);
+            $employeeMovement->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmployeeMovement(EmployeeMovement $employeeMovement): static
+    {
+        if ($this->employeeMovements->removeElement($employeeMovement)) {
+            // set the owning side to null (unless already changed)
+            if ($employeeMovement->getClient() === $this) {
+                $employeeMovement->setClient(null);
             }
         }
 

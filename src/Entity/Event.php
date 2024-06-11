@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EventRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -29,9 +31,6 @@ class Event
     private ?\DateTimeInterface $end_date = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $color = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'event')]
@@ -41,6 +40,17 @@ class Event
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    /**
+     * @var Collection<int, EmployeeMovement>
+     */
+    #[ORM\OneToMany(targetEntity: EmployeeMovement::class, mappedBy: 'event')]
+    private Collection $Employeemove;
+
+    public function __construct()
+    {
+        $this->Employeemove = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -83,17 +93,6 @@ class Event
         return $this;
     }
 
-    public function getColor(): ?string
-    {
-        return $this->color;
-    }
-
-    public function setColor(string $color): static
-    {
-        $this->color = $color;
-
-        return $this;
-    }
 
     public function getDescription(): ?string
     {
@@ -127,6 +126,36 @@ class Event
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EmployeeMovement>
+     */
+    public function getEmployeemove(): Collection
+    {
+        return $this->Employeemove;
+    }
+
+    public function addEmployeemove(EmployeeMovement $employeemove): static
+    {
+        if (!$this->Employeemove->contains($employeemove)) {
+            $this->Employeemove->add($employeemove);
+            $employeemove->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmployeemove(EmployeeMovement $employeemove): static
+    {
+        if ($this->Employeemove->removeElement($employeemove)) {
+            // set the owning side to null (unless already changed)
+            if ($employeemove->getEvent() === $this) {
+                $employeemove->setEvent(null);
+            }
+        }
 
         return $this;
     }

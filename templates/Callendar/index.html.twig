@@ -1,47 +1,48 @@
+{# templates/Callendar/index.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TestController!{% endblock %}
+{% block title %}Calendrier{% endblock %}
 
 {% block body %}
-<section class="content">
-<h1>Planning</h1>
-<div class='all'>
-<div class='left'>
-    <span class="form"></span>
+    <h1>Calendrier des Événements</h1>
+
+<div class="all">
+<aside class="left">
     <h2>Collaborateurs</h2>
+    {% for user in users %}
     
-{% for user in users %}
-    <div class='user-list' style:''>
-    {% if user.events is not null %}
-  
-    {% endif %}
-    
-    
-  
-        <h3>{{user.firstname}} {{user.lastname}}</h3>
-    
-    </div>
-    
-{% endfor %}
-    <a href="{{path('admin.users.create') }} " class='button btn-secondaire'>Ajouter</a>
-</div>
-<div id='calendrier'>
+        <div class="user-list" style="background-color :{{user.color}};">
+            {{user.Lastname}}
+        </div>
+
+        <a href="{{path('admin.users.create')}}" class='button btn-seconaire'>Ajouter</a>
+        
+        
+    {% endfor %}
+</aside>
+
+    <div id='calendrier'></div>
 
     <script>
     window.onload = () => {
-        let calendarElt = document.querySelector("#calendrier")
+        let calendarElt = document.querySelector("#calendrier");
 
-        let calendar = new FullCalendar.Calendar(calendarElt,{
-             themeSystem: 'bootstrap5',
-            initialView:'dayGridMonth',
-            locale:'fr',
+        let calendar = new FullCalendar.Calendar(calendarElt, {
+            themeSystem: 'bootstrap5',
+            initialView: 'dayGridMonth',
+            locale: 'fr',
             timeZone: 'Europe/Paris',
             headerToolbar: {
                 start: 'prev,next today',
                 center: 'title',
-                end:'dayGridMonth, timeGridWeek,listWeek'
+                end: 'dayGridMonth,timeGridWeek,listWeek' 
             },
-            events:{{data|raw}},
+            views: {
+                timeGridWeek: {
+                    titleFormat: { week: 'Semaine {weekNumber}' }
+                }
+            },
+            events: {{data|raw}},
             selectConstraint: {
                 start: new Date(), // La date actuelle
                 message: 'Impossible de sélectionner une date passée' // Message d'erreur affiché à l'utilisateur
@@ -57,10 +58,50 @@
         calendar.render();
     }
 </script>
-        
-        <a href="{{path('admin.event.create')}}" class='button btn-secondaire'>Ajouter un Deplacement</a>
+
+
+    <h2>Générer le fichier Excel des déplacements</h2>
+    
+   <form id="excelForm" action="{{ path('planning_generate') }}" method="post">
+    {% if events is not empty %}
+        <div>
+            <label for="client">Client :</label>
+            <select id="client" name="client_id" required>
+                {% for client in clients %}
+                    <option value="{{ client.id }}">{{ client.name }}</option>
+                {% endfor %}
+            </select>
         </div>
-    </div>
-    </section>
-  
+        <div>
+            <label for="start_date">Date de début :</label>
+            <input type="date" id="start_date" name="start_date" required>
+        </div>
+        <div>
+            <label for="end_date">Date de fin :</label>
+            <input type="date" id="end_date" name="end_date" required>
+        </div>
+        <div>
+            <button id="submitBtn" type="submit">Générer le fichier Excel</button>
+        </div>
+    {% else %}
+        <p>Aucun événement disponible pour le moment. Impossible de générer le fichier Excel.</p>
+    {% endif %}
+</div>
+</form>
+
+<script>
+    document.getElementById('excelForm').addEventListener('submit', function(event) {
+        var clientSelected = document.getElementById('client').value;
+        var startDate = document.getElementById('start_date').value;
+        var endDate = document.getElementById('end_date').value;
+
+        if (!clientSelected || !startDate || !endDate) {
+            event.preventDefault(); // Empêcher la soumission du formulaire si des champs sont vides
+            alert("Veuillez sélectionner un client et spécifier les dates de début et de fin.");
+        }
+    });
+</script>
+
+</script>
+
 {% endblock %}
