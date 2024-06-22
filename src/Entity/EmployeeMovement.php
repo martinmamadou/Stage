@@ -35,6 +35,10 @@ class EmployeeMovement
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
+    #[ORM\ManyToOne(inversedBy: 'employeeMovements')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Site $site = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -108,6 +112,18 @@ class EmployeeMovement
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
+
+        return $this;
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): static
+    {
+        $this->site = $site;
 
         return $this;
     }

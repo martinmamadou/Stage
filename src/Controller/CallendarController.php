@@ -5,11 +5,15 @@ use App\Entity\EmployeeMovement;
 use App\Repository\UserRepository;
 use App\Repository\EventRepository;
 use App\Repository\ClientRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\EmployeeMovementRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -56,6 +60,7 @@ class CallendarController extends AbstractController
                 $employeeMovement->setClient($event->getClient());
                 $employeeMovement->setUser($event->getUser());
                 $employeeMovement->setTitre($event->getTitre());
+                $employeeMovement->setSite($event->getSite());
                 // Autres propriétés de l'EmployeeMovement...
 
                 $this->em->persist($employeeMovement);
@@ -74,7 +79,8 @@ class CallendarController extends AbstractController
                 'backgroundColor' => $event->getUser()->getColor(),
                 'description' => $event->getDescription(),
                 'user' => $event->getUser(),
-                'client' => $event->getClient()
+                'client' => $event->getClient(),
+                'site' => $event->getSite(),
             ];
         }
 
@@ -104,26 +110,66 @@ class CallendarController extends AbstractController
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('C1', 'Client');
-        $sheet->setCellValue('B1', 'Date');
-        $sheet->setCellValue('A1', 'Employé');
-        $sheet->setCellValue('D1', 'Déplacement');
-        $sheet->getColumnDimension('A')->setWidth(20);
 
-        $row = 2;
+        // Définir les en-têtes
+        $sheet->mergeCells('A1:D1');
+        $sheet->setCellValue('A1', 'Mai - S20 (TE => Rafik, Julien, Pierre, Laurie)');
+        $sheet->getStyle('A1')->getFont()->setBold(true);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $sheet->setCellValue('A2', '');
+        $sheet->setCellValue('B2', '13');
+        $sheet->setCellValue('C2', '14');
+        $sheet->setCellValue('D2', '15');
+
+        // Exemple d'ajout de données avec des styles
+        $row = 3;
         foreach ($movements as $movement) {
-            $sheet->setCellValue('C' . $row, $movement->getClient()->getName());
-            $sheet->setCellValue('B' . $row, $movement->getDate()->format('Y-m-d'));
             $sheet->setCellValue('A' . $row, $movement->getUser()->getLastname());
-            $sheet->setCellValue('D' . $row, $movement->getMoveDescription());
+            $sheet->setCellValue('B' . $row, ''); // Initialement vide
+            $sheet->setCellValue('C' . $row, ''); // Initialement vide
+            $sheet->setCellValue('D' . $row, ''); // Initialement vide
+
+            // Supposons que $movement->getDate() retourne l'objet DateTime
+            $day = (int)$movement->getDate()->format('d');
+            if ($day == 13) {
+                $sheet->setCellValue('B' . $row, $movement->getMoveDescription());
+                $sheet->getStyle('B' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
+            } elseif ($day == 14) {
+                $sheet->setCellValue('C' . $row, $movement->getMoveDescription());
+                $sheet->getStyle('C' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
+            } elseif ($day == 15) {
+                $sheet->setCellValue('D' . $row, $movement->getMoveDescription());
+                $sheet->getStyle('D' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
+            }
             $row++;
         }
 
+        // Appliquer les bordures et autres styles
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+        ];
+        $sheet->getStyle('A1:D' . ($row - 1))->applyFromArray($styleArray);
+
+        // Agrandir toutes les cellules
+        for ($col = ord('A'); $col <= ord('D'); $col++) {
+            $sheet->getColumnDimension(chr($col))->setWidth(25);
+        }
+        for ($rowIndex = 1; $rowIndex <= $row - 1; $rowIndex++) {
+            $sheet->getRowDimension($rowIndex)->setRowHeight(25);
+        }
+
+        // Génération du fichier Excel
         $writer = new Xlsx($spreadsheet);
-        $fileName = $movement->getTitre().'.xlsx';
+        $fileName = 'planning_' . date('Y-m-d') . '.xlsx';
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
 
         return $this->file($tempFile, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
     }
+
 }

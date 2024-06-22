@@ -47,6 +47,10 @@ class Event
     #[ORM\OneToMany(targetEntity: EmployeeMovement::class, mappedBy: 'event')]
     private Collection $Employeemove;
 
+    #[ORM\ManyToOne(inversedBy: 'event')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Site $site = null;
+
     public function __construct()
     {
         $this->Employeemove = new ArrayCollection();
@@ -156,6 +160,18 @@ class Event
                 $employeemove->setEvent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): static
+    {
+        $this->site = $site;
 
         return $this;
     }
