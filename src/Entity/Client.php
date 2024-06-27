@@ -41,11 +41,18 @@ class Client
     #[ORM\OneToMany(targetEntity: EmployeeMovement::class, mappedBy: 'client')]
     private Collection $employeeMovements;
 
+    /**
+     * @var Collection<int, Devis>
+     */
+    #[ORM\OneToMany(targetEntity: Devis::class, mappedBy: 'client')]
+    private Collection $devis;
+
     public function __construct()
     {
         $this->event = new ArrayCollection();
         $this->sites = new ArrayCollection();
         $this->employeeMovements = new ArrayCollection();
+        $this->devis = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -149,6 +156,36 @@ class Client
             // set the owning side to null (unless already changed)
             if ($employeeMovement->getClient() === $this) {
                 $employeeMovement->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Devis>
+     */
+    public function getDevis(): Collection
+    {
+        return $this->devis;
+    }
+
+    public function addDevi(Devis $devi): static
+    {
+        if (!$this->devis->contains($devi)) {
+            $this->devis->add($devi);
+            $devi->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDevi(Devis $devi): static
+    {
+        if ($this->devis->removeElement($devi)) {
+            // set the owning side to null (unless already changed)
+            if ($devi->getClient() === $this) {
+                $devi->setClient(null);
             }
         }
 
