@@ -4,24 +4,25 @@
 {% block title %}Calendrier{% endblock %}
 
 {% block body %}
-    <h1>Calendrier des Événements</h1>
-
 <div class="all">
 <aside class="left">
     <h2>Collaborateurs</h2>
     {% for user in users %}
-    
         <div class="user-list" style="background-color :{{user.color}};">
             {{user.Lastname}}
-        </div>
-
-        <a href="{{path('admin.users.create')}}" class='button btn-seconaire'>Ajouter</a>
-        
-        
+        </div>    
     {% endfor %}
+    {% if is_granted ('ROLE_ADMIN') %}
+         <a href="{{path('admin.users.create')}}" class='button btn-seconaire'>Ajouter</a>
+    {% endif %}
+    
+   
 </aside>
 
-    <div id='calendrier'></div>
+    <div id='calendrier'>
+
+    <a href="{{path('admin.event.create')}}" class='button btn-principal'>Ajouter</a>
+    </div>
 
     <script>
     window.onload = () => {
@@ -59,7 +60,7 @@
     }
 </script>
 
-
+    <div class="excel">
     <h2>Générer le fichier Excel des déplacements</h2>
     
    <form id="excelForm" action="{{ path('planning_generate') }}" method="post">
@@ -86,6 +87,7 @@
     {% else %}
         <p>Aucun événement disponible pour le moment. Impossible de générer le fichier Excel.</p>
     {% endif %}
+    </div>
 </div>
 </form>
 
@@ -100,6 +102,7 @@
             alert("Veuillez sélectionner un client et spécifier les dates de début et de fin.");
         }
     });
+    
 </script>
 
 </script>

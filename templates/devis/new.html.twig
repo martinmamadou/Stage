@@ -18,6 +18,8 @@
         <button type="submit">Save</button>
     {{ form_end(form) }}
 
+    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let dynamicFieldsContainer = document.getElementById('dynamic-fields');
@@ -48,6 +50,7 @@
                         showField('devis_quantite');
                         break;
                     case 'Voiture':
+                        showField('devis_taxe');
                         showField('devis_km');
                         showField('devis_prixKm');
                         break;

@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use DateTime;
 use App\Entity\Devis;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Devis>
@@ -16,6 +17,15 @@ class DevisRepository extends ServiceEntityRepository
         parent::__construct($registry, Devis::class);
     }
 
+     /**
+     * Récupérer tous les devis.
+     *
+     * @return Devis[]
+     */
+    public function findAllDevis(): array
+    {
+        return $this->findAll();
+    }
     //    /**
     //     * @return Devis[] Returns an array of Devis objects
     //     */

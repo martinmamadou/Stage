@@ -1,12 +1,17 @@
 <?php
 namespace App\Entity;
 
-use App\Repository\DevisRepository;
+use App\Entity\Traits\DateTimeTrait;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\DevisRepository;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
 #[ORM\Entity(repositoryClass: DevisRepository::class)]
+#[HasLifecycleCallbacks]
 class Devis
 {
+    use DateTimeTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -43,6 +48,9 @@ class Devis
 
     #[ORM\ManyToOne(inversedBy: 'devis')]
     private ?Taxe $taxe = null;
+
+   
+
 
     public function getId(): ?int
     {
@@ -185,5 +193,6 @@ class Devis
             $this->totalTTC = 15;
         }
     }
+
 }
 
