@@ -26,6 +26,51 @@ class DevisRepository extends ServiceEntityRepository
     {
         return $this->findAll();
     }
+
+    public function findDevisForCurrentMonth(int $id): array
+    {
+        $currentDate = new \DateTime();
+        $firstDayOfMonth = (clone $currentDate)->modify('first day of this month')->setTime(0, 0, 0);
+        $lastDayOfMonth = (clone $currentDate)->modify('last day of this month')->setTime(23, 59, 59);
+
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.employe = :user')
+            ->andWhere('d.createdAt BETWEEN :start AND :end')
+            ->andWhere('d.Carte_client = :carte_client')
+            ->setParameter('user', $id)
+            ->setParameter('start', $firstDayOfMonth)
+            ->setParameter('end', $lastDayOfMonth)
+            ->setParameter('carte_client', false);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findClientDevisForCurrentMonth(int $id): array
+{
+    $currentDate = new \DateTime();
+    $firstDayOfMonth = (clone $currentDate)->modify('first day of this month')->setTime(0, 0, 0);
+    $lastDayOfMonth = (clone $currentDate)->modify('last day of this month')->setTime(23, 59, 59);
+
+    $qb = $this->createQueryBuilder('d')
+        ->where('d.client = :client')
+        ->andWhere('d.creation BETWEEN :start AND :end')
+        ->andWhere('d.Carte_client = :carte_client')
+        ->setParameter('client', $id)
+        ->setParameter('start', $firstDayOfMonth)
+        ->setParameter('end', $lastDayOfMonth)
+        ->setParameter('carte_client', true);
+
+    return $qb->getQuery()->getResult();
+}
+
+public function findDevisByUser(int $id): array
+{
+    $qb = $this->createQueryBuilder('d')
+        ->where('d.employe = :user')
+        ->setParameter('user', $id);
+
+    return $qb->getQuery()->getResult();
+}
     //    /**
     //     * @return Devis[] Returns an array of Devis objects
     //     */

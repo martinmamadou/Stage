@@ -13,6 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class EventType extends AbstractType
 {
@@ -40,6 +41,10 @@ class EventType extends AbstractType
                 'label' => 'Collaborateur',
                 'class' => User::class,
                 'choice_label' => 'firstName'
+            ])
+            ->add('groupe', NumberType::class, [
+                'label' => 'groupe',
+                'required' => false
             ])
          
             ->add('description', TextType::class,[

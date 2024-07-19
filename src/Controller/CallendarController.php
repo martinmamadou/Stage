@@ -61,6 +61,7 @@ class CallendarController extends AbstractController
                 $employeeMovement->setUser($event->getUser());
                 $employeeMovement->setTitre($event->getTitre());
                 $employeeMovement->setSite($event->getSite());
+                $employeeMovement->setGroupe($event->getGroupe());
                 // Autres propriétés de l'EmployeeMovement...
 
                 $this->em->persist($employeeMovement);
@@ -98,8 +99,8 @@ class CallendarController extends AbstractController
     public function generate(Request $request, EmployeeMovementRepository $employeeMovementRepository): Response
     {
         $clientId = $request->request->get('client_id');
-        $startDate = $request->request->get('start_date');
-        $endDate = $request->request->get('end_date');
+        $startDate = new \DateTime($request->request->get('start_date'));
+        $endDate = new \DateTime($request->request->get('end_date'));
 
         $movements = $employeeMovementRepository->findByClientAndDateRange($clientId, $startDate, $endDate);
 
@@ -112,36 +113,45 @@ class CallendarController extends AbstractController
         $sheet = $spreadsheet->getActiveSheet();
 
         // Définir les en-têtes
-        $sheet->mergeCells('A1:D1');
-        $sheet->setCellValue('A1', 'Mai - S20 (TE => Rafik, Julien, Pierre, Laurie)');
+        $weekNumber = $startDate->format('W');
+        $sheet->mergeCells('A1:' . chr(66 + $endDate->diff($startDate)->days) . '1');
+        $sheet->setCellValue('A1', "Semaine $weekNumber");
         $sheet->getStyle('A1')->getFont()->setBold(true);
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $sheet->setCellValue('A2', '');
-        $sheet->setCellValue('B2', '13');
-        $sheet->setCellValue('C2', '14');
-        $sheet->setCellValue('D2', '15');
+        // Générer dynamiquement les en-têtes des colonnes pour chaque jour de la période
+        $sheet->setCellValue('A2', 'Nom');
+        $col = 66; // ASCII value for 'B'
+        $currentDate = clone $startDate;
+        while ($currentDate <= $endDate) {
+            $sheet->setCellValue(chr($col) . '2', $currentDate->format('d'));
+            $currentDate->modify('+1 day');
+            $col++;
+        }
 
-        // Exemple d'ajout de données avec des styles
+        // Ajouter les données avec des styles
         $row = 3;
         foreach ($movements as $movement) {
             $sheet->setCellValue('A' . $row, $movement->getUser()->getLastname());
-            $sheet->setCellValue('B' . $row, ''); // Initialement vide
-            $sheet->setCellValue('C' . $row, ''); // Initialement vide
-            $sheet->setCellValue('D' . $row, ''); // Initialement vide
 
-            // Supposons que $movement->getDate() retourne l'objet DateTime
-            $day = (int)$movement->getDate()->format('d');
-            if ($day == 13) {
-                $sheet->setCellValue('B' . $row, $movement->getMoveDescription());
-                $sheet->getStyle('B' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
-            } elseif ($day == 14) {
-                $sheet->setCellValue('C' . $row, $movement->getMoveDescription());
-                $sheet->getStyle('C' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
-            } elseif ($day == 15) {
-                $sheet->setCellValue('D' . $row, $movement->getMoveDescription());
-                $sheet->getStyle('D' . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
+            // Initialiser les colonnes dynamiques
+            $col = 66; // ASCII value for 'B'
+            $currentDate = clone $startDate;
+            while ($currentDate <= $endDate) {
+                $sheet->setCellValue(chr($col) . $row, ''); // Initialement vide
+                $col++;
+                $currentDate->modify('+1 day');
             }
+
+            // Remplir les données selon les dates de mouvement
+            $day = (int)$movement->getDate()->format('d');
+            $colIndex = 66 + ($movement->getDate()->diff($startDate)->days); // Calculer la colonne en fonction de la différence de jours
+
+            // Ajouter la description du mouvement et le groupe
+            $cellValue = $movement->getMoveDescription() . ' (Groupe ' . $movement->getGroupe() . ')';
+            $sheet->setCellValue(chr($colIndex) . $row, $cellValue);
+            $sheet->getStyle(chr($colIndex) . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
+
             $row++;
         }
 
@@ -153,10 +163,10 @@ class CallendarController extends AbstractController
                 ],
             ],
         ];
-        $sheet->getStyle('A1:D' . ($row - 1))->applyFromArray($styleArray);
+        $sheet->getStyle('A1:' . chr(66 + $endDate->diff($startDate)->days) . ($row - 1))->applyFromArray($styleArray);
 
         // Agrandir toutes les cellules
-        for ($col = ord('A'); $col <= ord('D'); $col++) {
+        for ($col = 65; $col <= 66 + $endDate->diff($startDate)->days; $col++) {
             $sheet->getColumnDimension(chr($col))->setWidth(25);
         }
         for ($rowIndex = 1; $rowIndex <= $row - 1; $rowIndex++) {
@@ -172,4 +182,8 @@ class CallendarController extends AbstractController
         return $this->file($tempFile, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
     }
 
+
+    
+
 }
+

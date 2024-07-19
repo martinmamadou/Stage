@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[Route('', name: 'admin.users')]
+#[Route('/admin', name: 'admin.users')]
 class UserController extends AbstractController
 {
     public function __construct(

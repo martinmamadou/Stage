@@ -39,6 +39,9 @@ class EmployeeMovement
     #[ORM\JoinColumn(nullable: false)]
     private ?Site $site = null;
 
+    #[ORM\Column]
+    private ?int $groupe = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -124,6 +127,18 @@ class EmployeeMovement
     public function setSite(?Site $site): static
     {
         $this->site = $site;
+
+        return $this;
+    }
+
+    public function getGroupe(): ?int
+    {
+        return $this->groupe;
+    }
+
+    public function setGroupe(int $groupe): static
+    {
+        $this->groupe = $groupe;
 
         return $this;
     }

@@ -17,6 +17,8 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Number;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class DevisType extends AbstractType
 {
@@ -34,6 +36,13 @@ class DevisType extends AbstractType
             ->add('employe', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'FirstName',
+            ])
+            ->add('carte_client', CheckboxType::class,[
+                'label' => 'carte client',
+                'required' => false
+            ])
+            ->add('creation',DateType::class,[
+                'label'=>'creation'
             ])
             ->add('categorie', ChoiceType::class, [
                 'choices' => [

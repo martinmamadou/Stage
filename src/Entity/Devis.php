@@ -3,6 +3,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\DateTimeTrait;
 use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\DevisRepository;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
@@ -49,8 +50,11 @@ class Devis
     #[ORM\ManyToOne(inversedBy: 'devis')]
     private ?Taxe $taxe = null;
 
-   
+    #[ORM\Column(nullable: true)]
+    private ?bool $Carte_client = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $creation = null;
 
     public function getId(): ?int
     {
@@ -65,7 +69,6 @@ class Devis
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
         return $this;
     }
 
@@ -77,7 +80,6 @@ class Devis
     public function setClient(?Client $client): static
     {
         $this->client = $client;
-
         return $this;
     }
 
@@ -89,7 +91,6 @@ class Devis
     public function setEmploye(?User $employe): static
     {
         $this->employe = $employe;
-
         return $this;
     }
 
@@ -101,7 +102,6 @@ class Devis
     public function setCategorie(string $categorie): static
     {
         $this->categorie = $categorie;
-
         return $this;
     }
 
@@ -149,7 +149,6 @@ class Devis
     public function setPrixKm(?float $prixKm): static
     {
         $this->prixKm = $prixKm;
-
         return $this;
     }
 
@@ -161,7 +160,6 @@ class Devis
     public function setTotalTTC(float $totalTTC): static
     {
         $this->totalTTC = $totalTTC;
-
         return $this;
     }
 
@@ -177,22 +175,47 @@ class Devis
         return $this;
     }
 
+    public function getTotalTaxe(): float
+    {
+        if ($this->prixHt !== null && $this->quantite !== null && $this->taxe !== null) {
+            return round($this->prixHt * $this->quantite * $this->taxe->getRate(), 2);
+        }
+        return 0.0;
+    }
+
     private function calculateTotalTTC(): void
     {
         if ($this->km === null) {
             if ($this->prixHt !== null && $this->quantite !== null) {
                 $totalHt = $this->prixHt * $this->quantite;
-                if ($this->taxe !== null) {
-                    $totalTTC = $totalHt * (1 + $this->taxe->getRate());
-                } else {
-                    $totalTTC = $totalHt;
-                }
-                $this->totalTTC = round($totalTTC, 2);
+                $totalTaxe = $this->getTotalTaxe();
+                $this->totalTTC = round($totalHt + $totalTaxe, 2);
             }
         } else {
+            // Assumed fixed total for cases where km is not null, modify as needed.
             $this->totalTTC = 15;
         }
     }
 
-}
+    public function isCarteClient(): ?bool
+    {
+        return $this->Carte_client;
+    }
 
+    public function setCarteClient(bool $Carte_client): static
+    {
+        $this->Carte_client = $Carte_client;
+        return $this;
+    }
+
+    public function getCreation(): ?\DateTimeInterface
+    {
+        return $this->creation;
+    }
+
+    public function setCreation(?\DateTimeInterface $creation): static
+    {
+        $this->creation = $creation;
+        return $this;
+    }
+}

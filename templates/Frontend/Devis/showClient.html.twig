@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Devis Show{% endblock %}
+
+{% block body %}
+    <h1 class='mt-4'>Devis  </h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Categorie</th>
+                <th>PrixHt</th>
+                <th>Quantite</th>
+                <th>Km</th>
+                <th>PrixKm</th>
+                <th>TotaleTaxe</th>
+                <th>TotalTTC</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+        {% for devi in devis %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{ devi.titre }}</td>
+                <td>{{ devi.createdAt|date('d/m/Y') }}</td>
+                <td>{{ devi.categorie }}</td>
+                <td>{{ devi.prixHt }}€</td>
+                <td>{{ devi.quantite }}</td>
+                <td>{{ devi.km }}</td>
+                <td>{{ devi.prixKm }}</td>
+                <td>{{devi.totalTaxe}}€</td>
+                <td>{{ devi.totalTTC }}€</td>
+                
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    
+{% endblock %}

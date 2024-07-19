@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Backend;
 
 use App\Entity\Devis;
 use App\Form\DevisType;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route('/devis')]
+#[Route('/admin/devis')]
 class DevisController extends AbstractController
 {
     public function __construct(

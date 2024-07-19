@@ -19,46 +19,14 @@
    
 </aside>
 
-    <div id='calendrier'>
+    <div id='calendar'>
 
     <a href="{{path('admin.event.create')}}" class='button btn-principal'>Ajouter</a>
     </div>
 
-    <script>
-    window.onload = () => {
-        let calendarElt = document.querySelector("#calendrier");
-
-        let calendar = new FullCalendar.Calendar(calendarElt, {
-            themeSystem: 'bootstrap5',
-            initialView: 'dayGridMonth',
-            locale: 'fr',
-            timeZone: 'Europe/Paris',
-            headerToolbar: {
-                start: 'prev,next today',
-                center: 'title',
-                end: 'dayGridMonth,timeGridWeek,listWeek' 
-            },
-            views: {
-                timeGridWeek: {
-                    titleFormat: { week: 'Semaine {weekNumber}' }
-                }
-            },
-            events: {{data|raw}},
-            selectConstraint: {
-                start: new Date(), // La date actuelle
-                message: 'Impossible de sélectionner une date passée' // Message d'erreur affiché à l'utilisateur
-            },
-            editable: true, // Activer le glisser-déposer
-            eventDrop: function(info) {
-                // Action à effectuer lorsqu'un événement est déplacé
-                console.log('Événement déplacé:', info.event);
-                // Vous pouvez ajouter ici la logique pour enregistrer le déplacement de l'événement sur le serveur
-            }
-        });
-        
-        calendar.render();
-    }
-</script>
+        <script>
+			window.calendarEvents = {{data|raw}}
+		</script>
 
     <div class="excel">
     <h2>Générer le fichier Excel des déplacements</h2>
