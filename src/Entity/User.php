@@ -64,16 +64,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $color = null;
 
     /**
-     * @var Collection<int, Devis>
+     * @var Collection<int, NoteFrais>
      */
-    #[ORM\OneToMany(targetEntity: Devis::class, mappedBy: 'employe')]
-    private Collection $devis;
+    #[ORM\OneToMany(targetEntity: NoteFrais::class, mappedBy: 'employe')]
+    private Collection $NoteFrais;
 
     public function __construct()
     {
         $this->events = new ArrayCollection();
         $this->employeeMovements = new ArrayCollection();
-        $this->devis = new ArrayCollection();
+        $this->NoteFrais = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -260,26 +260,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Devis>
+     * @return Collection<int, NoteFrais>
      */
-    public function getDevis(): Collection
+    public function getNoteFrais(): Collection
     {
-        return $this->devis;
+        return $this->NoteFrais;
     }
 
-    public function addDevi(Devis $devi): static
+    public function addDevi(NoteFrais $devi): static
     {
-        if (!$this->devis->contains($devi)) {
-            $this->devis->add($devi);
+        if (!$this->NoteFrais->contains($devi)) {
+            $this->NoteFrais->add($devi);
             $devi->setEmploye($this);
         }
 
         return $this;
     }
 
-    public function removeDevi(Devis $devi): static
+    public function removeDevi(NoteFrais $devi): static
     {
-        if ($this->devis->removeElement($devi)) {
+        if ($this->NoteFrais->removeElement($devi)) {
             // set the owning side to null (unless already changed)
             if ($devi->getEmploye() === $this) {
                 $devi->setEmploye(null);

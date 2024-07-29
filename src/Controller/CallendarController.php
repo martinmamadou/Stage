@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\Event;
+use App\Form\EventType;
 use App\Entity\EmployeeMovement;
 use App\Repository\UserRepository;
 use App\Repository\EventRepository;
@@ -16,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Repository\EmployeeMovementRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -56,6 +59,7 @@ class CallendarController extends AbstractController
                 $employeeMovement = new EmployeeMovement();
                 $employeeMovement->setEvent($event);
                 $employeeMovement->setDate($event->getStartDate());
+                $employeeMovement->setEnd($event->getEndDate());
                 $employeeMovement->setMoveDescription($event->getDescription());
                 $employeeMovement->setClient($event->getClient());
                 $employeeMovement->setUser($event->getUser());
@@ -95,95 +99,117 @@ class CallendarController extends AbstractController
         ]);
     }
 
-    #[Route('/planning/generate', name: 'planning_generate', methods: ['POST'])]
-    public function generate(Request $request, EmployeeMovementRepository $employeeMovementRepository): Response
+    #[Route('/event/create', 'event.create', methods:['GET','POST'])]
+    public function create(Request $request):Response|RedirectResponse
     {
-        $clientId = $request->request->get('client_id');
-        $startDate = new \DateTime($request->request->get('start_date'));
-        $endDate = new \DateTime($request->request->get('end_date'));
+        $event = new Event();
+        $form = $this->createForm(EventType::class,$event);
+        $form->handleRequest($request);
+        if($form->isSubmitted()&&$form->isValid()){
 
-        $movements = $employeeMovementRepository->findByClientAndDateRange($clientId, $startDate, $endDate);
+            $dateEvenement = $event->getStartDate(); // Supposons que la date soit stockée dans l'objet Event
+            $dateActuelle = new \DateTime();
 
-        if (empty($movements)) {
-            $this->addFlash('error', 'Aucun déplacement prévu pour ce client dans cette période de temps donnée');
+        if ($dateEvenement < $dateActuelle) {
+            $this->addFlash('error', 'La date de l\'événement ne peut pas être antérieure à la date actuelle');
+            return $this->redirectToRoute('admin.event.create'); // Rediriger vers le formulaire de création avec un message d'erreur
+        }
+
+            $this->em->persist($event);
+            $this->em->flush();
+
+            $this->addFlash('success','ajout d\'evenement reussi');
             return $this->redirectToRoute('app.home');
         }
 
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
 
-        // Définir les en-têtes
-        $weekNumber = $startDate->format('W');
-        $sheet->mergeCells('A1:' . chr(66 + $endDate->diff($startDate)->days) . '1');
-        $sheet->setCellValue('A1', "Semaine $weekNumber");
-        $sheet->getStyle('A1')->getFont()->setBold(true);
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        return $this->render('Backend/Event/create.html.twig', [
+            'form' => $form,
+            'events'=>$this->eventRepo->findFutureEvents()
+        ]);
+    }
+    #[Route('/planning/generate', name: 'planning_generate', methods: ['POST'])]
+public function generate(Request $request, EmployeeMovementRepository $employeeMovementRepository): Response
+{
+    $clientId = $request->request->get('client_id');
+    $startDate = new \DateTime($request->request->get('start_date'));
+    $endDate = new \DateTime($request->request->get('end_date'));
 
-        // Générer dynamiquement les en-têtes des colonnes pour chaque jour de la période
-        $sheet->setCellValue('A2', 'Nom');
-        $col = 66; // ASCII value for 'B'
-        $currentDate = clone $startDate;
-        while ($currentDate <= $endDate) {
-            $sheet->setCellValue(chr($col) . '2', $currentDate->format('d'));
-            $currentDate->modify('+1 day');
-            $col++;
-        }
+    $movements = $employeeMovementRepository->findByClientAndDateRange($clientId, $startDate, $endDate);
 
-        // Ajouter les données avec des styles
-        $row = 3;
-        foreach ($movements as $movement) {
-            $sheet->setCellValue('A' . $row, $movement->getUser()->getLastname());
-
-            // Initialiser les colonnes dynamiques
-            $col = 66; // ASCII value for 'B'
-            $currentDate = clone $startDate;
-            while ($currentDate <= $endDate) {
-                $sheet->setCellValue(chr($col) . $row, ''); // Initialement vide
-                $col++;
-                $currentDate->modify('+1 day');
-            }
-
-            // Remplir les données selon les dates de mouvement
-            $day = (int)$movement->getDate()->format('d');
-            $colIndex = 66 + ($movement->getDate()->diff($startDate)->days); // Calculer la colonne en fonction de la différence de jours
-
-            // Ajouter la description du mouvement et le groupe
-            $cellValue = $movement->getMoveDescription() . ' (Groupe ' . $movement->getGroupe() . ')';
-            $sheet->setCellValue(chr($colIndex) . $row, $cellValue);
-            $sheet->getStyle(chr($colIndex) . $row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB(Color::COLOR_YELLOW);
-
-            $row++;
-        }
-
-        // Appliquer les bordures et autres styles
-        $styleArray = [
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                ],
-            ],
-        ];
-        $sheet->getStyle('A1:' . chr(66 + $endDate->diff($startDate)->days) . ($row - 1))->applyFromArray($styleArray);
-
-        // Agrandir toutes les cellules
-        for ($col = 65; $col <= 66 + $endDate->diff($startDate)->days; $col++) {
-            $sheet->getColumnDimension(chr($col))->setWidth(25);
-        }
-        for ($rowIndex = 1; $rowIndex <= $row - 1; $rowIndex++) {
-            $sheet->getRowDimension($rowIndex)->setRowHeight(25);
-        }
-
-        // Génération du fichier Excel
-        $writer = new Xlsx($spreadsheet);
-        $fileName = 'planning_' . date('Y-m-d') . '.xlsx';
-        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
-        $writer->save($tempFile);
-
-        return $this->file($tempFile, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+    if (empty($movements)) {
+        $this->addFlash('error', 'Aucun déplacement prévu pour ce client dans cette période de temps donnée');
+        return $this->redirectToRoute('app.home');
     }
 
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $rowOffset = 1;
 
-    
+    // Grouper les mouvements par site
+    $movementsBySite = [];
+    foreach ($movements as $movement) {
+        $siteName = $movement->getSite()->getName();
+        if (!isset($movementsBySite[$siteName])) {
+            $movementsBySite[$siteName] = [];
+        }
+        $movementsBySite[$siteName][] = $movement;
+    }
+
+    foreach ($movementsBySite as $siteName => $siteMovements) {
+        // Ajouter le titre du site
+        $sheet->mergeCells('A' . $rowOffset . ':D' . $rowOffset);
+        $sheet->setCellValue('A' . $rowOffset, "Site: $siteName");
+        $sheet->getStyle('A' . $rowOffset)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $rowOffset)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        // Générer les en-têtes
+        $rowOffset++;
+        $sheet->setCellValue('A' . $rowOffset, 'Nom');
+        $sheet->setCellValue('B' . $rowOffset, 'Semaine');
+        $sheet->setCellValue('C' . $rowOffset, 'Description Mission');
+        $sheet->setCellValue('D' . $rowOffset, 'Groupe');
+
+        // Ajouter les données des mouvements
+        $rowOffset++;
+        foreach ($siteMovements as $movement) {
+            $movementStartDate = $movement->getDate();
+            $movementEndDate = $movement->getEnd();
+
+            $startWeek = (int)$movementStartDate->format('W');
+            $endWeek = (int)$movementEndDate->format('W');
+            $weekRange = $startWeek === $endWeek ? "Semaine $startWeek" : "Semaine $startWeek - $endWeek";
+
+            $sheet->setCellValue('A' . $rowOffset, $movement->getUser()->getLastname());
+            $sheet->setCellValue('B' . $rowOffset, $weekRange); // Plage de semaines
+            $sheet->setCellValue('C' . $rowOffset, $movement->getMoveDescription());
+            $sheet->setCellValue('D' . $rowOffset, $movement->getGroupe());
+
+            $rowOffset++;
+        }
+
+        // Ajouter un espace entre les tableaux des sites
+        $rowOffset += 2;
+    }
+
+    // Agrandir la taille des cellules
+    foreach (range('A', 'D') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setWidth(30); // Ajuster la largeur des colonnes
+    }
+
+    for ($rowIndex = 1; $rowIndex <= $rowOffset; $rowIndex++) {
+        $sheet->getRowDimension($rowIndex)->setRowHeight(30); // Ajuster la hauteur des lignes
+    }
+
+    // Génération du fichier Excel
+    $writer = new Xlsx($spreadsheet);
+    $fileName = 'planning_' . date('Y-m-d') . '.xlsx';
+    $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+    $writer->save($tempFile);
+
+    return $this->file($tempFile, $fileName, ResponseHeaderBag::DISPOSITION_INLINE);
+}
+
 
 }
 

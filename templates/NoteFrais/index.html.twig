@@ -1,40 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Devis Show{% endblock %}
+{% block title %}NoteFrais index{% endblock %}
 
 {% block body %}
-    <h1 class='mt-4'>Devis  </h1>
+    <h1>NoteFrais index</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>#</th>
+                <th>Id</th>
                 <th>Titre</th>
-                <th>Date</th>
+                <th>Client</th>
                 <th>Categorie</th>
                 <th>PrixHt</th>
                 <th>Quantite</th>
                 <th>Km</th>
                 <th>PrixKm</th>
-                <th>TotaleTaxe</th>
                 <th>TotalTTC</th>
-                
+                <th>actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for devi in devis %}
+        {% for devi in NoteFrais %}
             <tr>
-                <td>{{loop.index}}</td>
+                <td>{{ devi.id }}</td>
                 <td>{{ devi.titre }}</td>
-                <td>{{ devi.createdAt|date('d/m/Y') }}</td>
+                <td>{{devi.client.name}}</td>
                 <td>{{ devi.categorie }}</td>
-                <td>{{ devi.prixHt }}€</td>
+                <td>{{ devi.prixHt }}</td>
                 <td>{{ devi.quantite }}</td>
                 <td>{{ devi.km }}</td>
                 <td>{{ devi.prixKm }}</td>
-                <td>{{devi.totalTaxe}}€</td>
-                <td>{{ devi.totalTTC }}€</td>
-                
+                <td>{{ devi.totalTTC }}</td>
+                <td>
+                    <a href="{{ path('app_NoteFrais_show', {'id': devi.id}) }}">show</a>
+                    <a href="{{ path('app_NoteFrais_edit', {'id': devi.id}) }}">edit</a>
+                </td>
             </tr>
         {% else %}
             <tr>
@@ -43,5 +44,7 @@
         {% endfor %}
         </tbody>
     </table>
-    
+
+    <a href="{{ path('app_NoteFrais_new') }}">Create new</a>
+    <a href="{{ path('app_NoteFrais_export_excel') }}" class="btn btn-primary">Export to Excel</a>
 {% endblock %}

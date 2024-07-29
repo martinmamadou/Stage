@@ -42,6 +42,9 @@ class EmployeeMovement
     #[ORM\Column]
     private ?int $groupe = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $end = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -139,6 +142,18 @@ class EmployeeMovement
     public function setGroupe(int $groupe): static
     {
         $this->groupe = $groupe;
+
+        return $this;
+    }
+
+    public function getEnd(): ?\DateTimeInterface
+    {
+        return $this->end;
+    }
+
+    public function setEnd(\DateTimeInterface $end): static
+    {
+        $this->end = $end;
 
         return $this;
     }

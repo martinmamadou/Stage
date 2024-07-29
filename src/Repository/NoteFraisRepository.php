@@ -3,31 +3,31 @@
 namespace App\Repository;
 
 use DateTime;
-use App\Entity\Devis;
+use App\Entity\NoteFrais;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
- * @extends ServiceEntityRepository<Devis>
+ * @extends ServiceEntityRepository<NoteFrais>
  */
-class DevisRepository extends ServiceEntityRepository
+class NoteFraisRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Devis::class);
+        parent::__construct($registry, NoteFrais::class);
     }
 
      /**
-     * Récupérer tous les devis.
+     * Récupérer tous les NoteFrais.
      *
-     * @return Devis[]
+     * @return NoteFrais[]
      */
-    public function findAllDevis(): array
+    public function findAllNoteFrais(): array
     {
         return $this->findAll();
     }
 
-    public function findDevisForCurrentMonth(int $id): array
+    public function findNoteFraisForCurrentMonth(int $id): array
     {
         $currentDate = new \DateTime();
         $firstDayOfMonth = (clone $currentDate)->modify('first day of this month')->setTime(0, 0, 0);
@@ -45,17 +45,15 @@ class DevisRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findClientDevisForCurrentMonth(int $id): array
+    public function findClientNoteFraisForCurrentMonth(): array
 {
     $currentDate = new \DateTime();
     $firstDayOfMonth = (clone $currentDate)->modify('first day of this month')->setTime(0, 0, 0);
     $lastDayOfMonth = (clone $currentDate)->modify('last day of this month')->setTime(23, 59, 59);
 
     $qb = $this->createQueryBuilder('d')
-        ->where('d.client = :client')
-        ->andWhere('d.creation BETWEEN :start AND :end')
+        ->where('d.creation BETWEEN :start AND :end')
         ->andWhere('d.Carte_client = :carte_client')
-        ->setParameter('client', $id)
         ->setParameter('start', $firstDayOfMonth)
         ->setParameter('end', $lastDayOfMonth)
         ->setParameter('carte_client', true);
@@ -63,7 +61,7 @@ class DevisRepository extends ServiceEntityRepository
     return $qb->getQuery()->getResult();
 }
 
-public function findDevisByUser(int $id): array
+public function findNoteFraisByUser(int $id): array
 {
     $qb = $this->createQueryBuilder('d')
         ->where('d.employe = :user')
@@ -72,7 +70,7 @@ public function findDevisByUser(int $id): array
     return $qb->getQuery()->getResult();
 }
     //    /**
-    //     * @return Devis[] Returns an array of Devis objects
+    //     * @return NoteFrais[] Returns an array of NoteFrais objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -86,7 +84,7 @@ public function findDevisByUser(int $id): array
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Devis
+    //    public function findOneBySomeField($value): ?NoteFrais
     //    {
     //        return $this->createQueryBuilder('d')
     //            ->andWhere('d.exampleField = :val')

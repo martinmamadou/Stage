@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Devis{% endblock %}
+{% block title %}NoteFrais{% endblock %}
 
 {% block body %}
-    <h1>Devis</h1>
+    <h1>NoteFrais</h1>
     <pre>
         {{ dump(_context) }}
     </pre>
@@ -45,9 +45,9 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_devis_index') }}">back to list</a>
+    <a href="{{ path('app_NoteFrais_index') }}">back to list</a>
 
-    <a href="{{ path('app_devis_edit', {'id': devi.id}) }}">edit</a>
+    <a href="{{ path('app_NoteFrais_edit', {'id': devi.id}) }}">edit</a>
 
-    {{ include('devis/_delete_form.html.twig') }}
+    {{ include('NoteFrais/_delete_form.html.twig') }}
 {% endblock %}

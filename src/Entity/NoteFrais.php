@@ -2,17 +2,17 @@
 namespace App\Entity;
 
 use App\Entity\Traits\DateTimeTrait;
-use DateTime;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\DevisRepository;
+use App\Repository\NoteFraisRepository;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
-#[ORM\Entity(repositoryClass: DevisRepository::class)]
+#[ORM\Entity(repositoryClass: NoteFraisRepository::class)]
 #[HasLifecycleCallbacks]
-class Devis
+class NoteFrais
 {
     use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -21,15 +21,15 @@ class Devis
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
-    #[ORM\ManyToOne(inversedBy: 'devis')]
+    #[ORM\ManyToOne(inversedBy: 'NoteFrais')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Client $client = null;
 
-    #[ORM\ManyToOne(inversedBy: 'devis')]
+    #[ORM\ManyToOne(inversedBy: 'NoteFrais')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $employe = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     private ?string $categorie = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
@@ -47,7 +47,8 @@ class Devis
     #[ORM\Column(type: 'float')]
     private ?float $totalTTC = null;
 
-    #[ORM\ManyToOne(inversedBy: 'devis')]
+    #[ORM\ManyToOne(inversedBy: 'NoteFrais')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Taxe $taxe = null;
 
     #[ORM\Column(nullable: true)]
@@ -55,6 +56,36 @@ class Devis
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $creation = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Forfait $forfait = null;
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function updateTotalTTC(): void
+    {
+        $this->calculateTotalTTC();
+    }
+
+    private function calculateTotalTTC(): void
+    {
+        if ($this->km === null) {
+            if ($this->prixHt !== null && $this->quantite !== null) {
+                $totalHt = $this->prixHt * $this->quantite;
+                $totalTaxe = $this->getTotalTaxe();
+                $this->totalTTC = round($totalHt + $totalTaxe, 2);
+            } else if ($this->categorie === 'forfait' && $this->prixHt !== null) {
+                $this->totalTTC = $this->prixHt;
+            } else {
+                $this->totalTTC = 0;  // Default value to avoid null
+            }
+        } else {
+            $this->totalTTC = $this->km * (1+0.5);
+        }
+    }
+
+    // Getters and setters...
 
     public function getId(): ?int
     {
@@ -183,20 +214,6 @@ class Devis
         return 0.0;
     }
 
-    private function calculateTotalTTC(): void
-    {
-        if ($this->km === null) {
-            if ($this->prixHt !== null && $this->quantite !== null) {
-                $totalHt = $this->prixHt * $this->quantite;
-                $totalTaxe = $this->getTotalTaxe();
-                $this->totalTTC = round($totalHt + $totalTaxe, 2);
-            }
-        } else {
-            // Assumed fixed total for cases where km is not null, modify as needed.
-            $this->totalTTC = 15;
-        }
-    }
-
     public function isCarteClient(): ?bool
     {
         return $this->Carte_client;
@@ -216,6 +233,17 @@ class Devis
     public function setCreation(?\DateTimeInterface $creation): static
     {
         $this->creation = $creation;
+        return $this;
+    }
+
+    public function getForfait(): ?Forfait
+    {
+        return $this->forfait;
+    }
+
+    public function setForfait(?Forfait $forfait): static
+    {
+        $this->forfait = $forfait;
         return $this;
     }
 }

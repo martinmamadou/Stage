@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Note de Frais{% endblock %}
+
+{% block body %}
+    <section class="container mt-4">
+        <h1 class="text-center">Note de Frais</h1>
+        {% for user in users %}
+             <div class="NoteFrais-list">
+                <p>{{user.firstname}}</p>
+                <a href="{{path('NoteFrais.show',{id:user.id})}}">Voir Note de frais</a>
+            </div>
+        {% endfor %}
+        <hr>
+            <h2>Carte Client</h2>
+             <a href="{{path('NoteFrais.showClient')}}">Voir Note De Frais</a>
+        <a href="{{path('NoteFrais.new')}}" class='button btn-primary d-flex justify-content-center'>Ajouter une note de frais</a>
+    </section>
+{% endblock %}

@@ -1,39 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Devis index{% endblock %}
+{% block title %}NoteFrais Show{% endblock %}
 
 {% block body %}
-    <h1>Devis index</h1>
+    <h1 class='mt-4'>NoteFrais {{user.firstname}} </h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>#</th>
                 <th>Titre</th>
+                <th>client</th>
+                <th>Date</th>
                 <th>Categorie</th>
                 <th>PrixHt</th>
                 <th>Quantite</th>
                 <th>Km</th>
                 <th>PrixKm</th>
                 <th>TotalTTC</th>
-                <th>actions</th>
             </tr>
         </thead>
         <tbody>
-        {% for devi in devis %}
+        {% for devi in NoteFrais %}
             <tr>
-                <td>{{ devi.id }}</td>
+                <td>{{loop.index}}</td>
                 <td>{{ devi.titre }}</td>
+                <td>{{devi.client.name}}</td>
+                <td>{{ devi.createdAt|date('d/m/Y') }}</td>
                 <td>{{ devi.categorie }}</td>
                 <td>{{ devi.prixHt }}</td>
                 <td>{{ devi.quantite }}</td>
                 <td>{{ devi.km }}</td>
                 <td>{{ devi.prixKm }}</td>
                 <td>{{ devi.totalTTC }}</td>
-                <td>
-                    <a href="{{ path('app_devis_show', {'id': devi.id}) }}">show</a>
-                    <a href="{{ path('app_devis_edit', {'id': devi.id}) }}">edit</a>
-                </td>
+                <td>{{ devi.totalTaxe }}</td>
             </tr>
         {% else %}
             <tr>
@@ -42,7 +42,11 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_devis_new') }}">Create new</a>
-    <a href="{{ path('app_devis_export_excel') }}" class="btn btn-primary">Export to Excel</a>
+    <div class="total">
+        <h2>Total Taxe</h2>
+        <p>{{taxe}}€</p>
+        <h2>Total TTC</h2>
+        <p>{{total}}€</p>    
+    </div>
+     <a href="{{ path('app_NoteFrais_export_excel') }}" class="btn btn-primary">Export to Excel</a>
 {% endblock %}

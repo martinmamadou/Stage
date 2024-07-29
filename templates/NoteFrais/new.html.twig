@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Note de Frais{% endblock %}
+
+{% block body %}
+    <h1>Create new NoteFrais</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.titre) }}
+        {{ form_row(form.client) }}
+        {{ form_row(form.employe) }}
+        {{ form_row(form.carte_client) }}
+        {{ form_row(form.categorie) }}
+        <div id="dynamic-fields">
+            {{ form_row(form.prixHt) }}
+            {{ form_row(form.quantite) }}
+            {{ form_row(form.km) }}
+            {{ form_row(form.prixKm) }}
+            {{ form_row(form.taxe) }}
+            {{ form_row(form.forfait) }}
+        </div>
+        <button type="submit">Save</button>
+    {{ form_end(form) }}
+
+    <script>
+       document.addEventListener('DOMContentLoaded', function() {
+    let dynamicFieldsContainer = document.getElementById('dynamic-fields');
+
+    function updateDynamicFields() {
+        let category = document.getElementById('note_frais_categorie').value;
+        console.log('Selected category:', category);  // Debugging line
+
+        if (dynamicFieldsContainer) {
+            Array.from(dynamicFieldsContainer.children).forEach(function(field) {
+                field.style.display = 'none';
+                let input = field.querySelector('input, select, textarea');
+                if (input) {
+                    input.value = '';
+                }
+            });
+        }
+
+        switch (category) {
+            case 'Hotel':
+                showField('note_frais_taxe');
+                showField('note_frais_quantite');
+                break;
+            case 'Voiture':
+                showField('note_frais_km');
+                showField('note_frais_prixKm');
+                break;
+            case 'forfait':
+                showField('note_frais_forfait');
+                break;
+            case 'Avion':
+                showField('note_frais_taxe');
+                showField('note_frais_prixHt');
+                showField('note_frais_quantite');
+                break;
+            case 'Train':
+                showField('note_frais_taxe');
+                showField('note_frais_prixHt');
+                showField('note_frais_quantite');
+                break;
+            default:
+                console.log('Category not recognized:', category);  // Debugging line
+                break;
+        }
+    }
+
+    function showField(fieldId) {
+        let field = document.getElementById(fieldId);
+        if (field) {
+            field.parentNode.style.display = 'block';
+        } else {
+            console.log('Field not found:', fieldId);  // Debugging line
+        }
+    }
+
+    let categorieField = document.getElementById('note_frais_categorie');
+    if (categorieField) {
+        categorieField.addEventListener('change', updateDynamicFields);
+        updateDynamicFields();  // Initial call to show/hide fields
+    } else {
+        console.log('Categorie field not found');  // Debugging line
+    }
+
+    const forfaitSelect = document.querySelector('select[name="note_frais[forfait]"]');
+    const prixHtInput = document.querySelector('input[name="note_frais[prixHt]"]');
+
+    if (forfaitSelect && prixHtInput) {
+        forfaitSelect.addEventListener('change', function() {
+            const selectedOption = forfaitSelect.options[forfaitSelect.selectedIndex];
+            const forfaitSomme = selectedOption.getAttribute('data-somme');
+
+            if (forfaitSomme) {
+                prixHtInput.value = forfaitSomme;
+            } else {
+                prixHtInput.value = '';
+            }
+        });
+    } else {
+        console.log('Forfait select or prixHt input not found');  // Debugging line
+    }
+});
+</script>
+{% endblock %}

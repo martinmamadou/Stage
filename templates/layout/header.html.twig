@@ -1,0 +1,9 @@
+<nav>
+    <div class="logo-contain"></div>
+    <ul>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{path('app.admin')}}">Admin</a>
+    {% endif %}
+        <li><a href="/logout">Deconnexion</a></li>
+    </ul>
+</nav>

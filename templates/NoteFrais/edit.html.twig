@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit NoteFrais{% endblock %}
+
+{% block body %}
+    <h1>Edit NoteFrais</h1>
+
+    {{ include('NoteFrais/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_NoteFrais_index') }}">back to list</a>
+
+    {{ include('NoteFrais/_delete_form.html.twig') }}
+{% endblock %}

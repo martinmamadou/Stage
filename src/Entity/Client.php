@@ -42,17 +42,24 @@ class Client
     private Collection $employeeMovements;
 
     /**
-     * @var Collection<int, Devis>
+     * @var Collection<int, NoteFrais>
      */
-    #[ORM\OneToMany(targetEntity: Devis::class, mappedBy: 'client')]
-    private Collection $devis;
+    #[ORM\OneToMany(targetEntity: NoteFrais::class, mappedBy: 'client')]
+    private Collection $NoteFrais;
+
+    /**
+     * @var Collection<int, Forfait>
+     */
+    #[ORM\OneToMany(targetEntity: Forfait::class, mappedBy: 'client', orphanRemoval: true)]
+    private Collection $forfaits;
 
     public function __construct()
     {
         $this->event = new ArrayCollection();
         $this->sites = new ArrayCollection();
         $this->employeeMovements = new ArrayCollection();
-        $this->devis = new ArrayCollection();
+        $this->NoteFrais = new ArrayCollection();
+        $this->forfaits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -163,29 +170,59 @@ class Client
     }
 
     /**
-     * @return Collection<int, Devis>
+     * @return Collection<int, NoteFrais>
      */
-    public function getDevis(): Collection
+    public function getNoteFrais(): Collection
     {
-        return $this->devis;
+        return $this->NoteFrais;
     }
 
-    public function addDevi(Devis $devi): static
+    public function addDevi(NoteFrais $devi): static
     {
-        if (!$this->devis->contains($devi)) {
-            $this->devis->add($devi);
+        if (!$this->NoteFrais->contains($devi)) {
+            $this->NoteFrais->add($devi);
             $devi->setClient($this);
         }
 
         return $this;
     }
 
-    public function removeDevi(Devis $devi): static
+    public function removeDevi(NoteFrais $devi): static
     {
-        if ($this->devis->removeElement($devi)) {
+        if ($this->NoteFrais->removeElement($devi)) {
             // set the owning side to null (unless already changed)
             if ($devi->getClient() === $this) {
                 $devi->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Forfait>
+     */
+    public function getForfaits(): Collection
+    {
+        return $this->forfaits;
+    }
+
+    public function addForfait(Forfait $forfait): static
+    {
+        if (!$this->forfaits->contains($forfait)) {
+            $this->forfaits->add($forfait);
+            $forfait->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeForfait(Forfait $forfait): static
+    {
+        if ($this->forfaits->removeElement($forfait)) {
+            // set the owning side to null (unless already changed)
+            if ($forfait->getClient() === $this) {
+                $forfait->setClient(null);
             }
         }
 

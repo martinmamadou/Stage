@@ -12,8 +12,11 @@
             {{user.Lastname}}
         </div>    
     {% endfor %}
+     <a href="{{path('NoteFrais.index')}}" class="button btn-secondaire">Note de Frais</a>
     {% if is_granted ('ROLE_ADMIN') %}
+       
          <a href="{{path('admin.users.create')}}" class='button btn-seconaire'>Ajouter</a>
+
     {% endif %}
     
    
@@ -21,7 +24,7 @@
 
     <div id='calendar'>
 
-    <a href="{{path('admin.event.create')}}" class='button btn-principal'>Ajouter</a>
+    <a href="{{path('event.create')}}" class='button btn-principal'>Ajouter</a>
     </div>
 
         <script>

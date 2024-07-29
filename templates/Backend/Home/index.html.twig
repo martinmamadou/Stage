@@ -1,0 +1,35 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Administration
+{% endblock %}
+
+{% block body %}
+    <h1>Administration</h1>
+
+    <a href="{{path('admin.users.index')}}">
+    <div class="listing">
+        <p>Utilisateurs</p>
+    </div>
+    </a>
+    <a href="{{path('admin.client.index')}}">
+    <div class="listing">
+        <p>Client</p>
+    </div>
+    </a>
+    <a href="{{path('admin.site.index')}}">
+    <div class="listing">
+        <p>site</p>
+    </div>
+    </a>
+    <a href="{{path('admin.event.index')}}">
+    <div class="listing">
+        <p>Event</p>
+    </div>
+    </a>
+    <a href="{{path('app_NoteFrais_index')}}">
+    <div class="listing">
+        <p>Note de Frais</p>
+    </div>
+    </a>
+{% endblock %}

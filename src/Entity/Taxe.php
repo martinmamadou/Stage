@@ -22,14 +22,14 @@ class Taxe
     private ?float $rate = null;
 
     /**
-     * @var Collection<int, Devis>
+     * @var Collection<int, NoteFrais>
      */
-    #[ORM\OneToMany(targetEntity: Devis::class, mappedBy: 'taxe')]
-    private Collection $devis;
+    #[ORM\OneToMany(targetEntity: NoteFrais::class, mappedBy: 'taxe')]
+    private Collection $NoteFrais;
 
     public function __construct()
     {
-        $this->devis = new ArrayCollection();
+        $this->NoteFrais = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -62,26 +62,26 @@ class Taxe
     }
 
     /**
-     * @return Collection<int, Devis>
+     * @return Collection<int, NoteFrais>
      */
-    public function getDevis(): Collection
+    public function getNoteFrais(): Collection
     {
-        return $this->devis;
+        return $this->NoteFrais;
     }
 
-    public function addDevi(Devis $devi): static
+    public function addDevi(NoteFrais $devi): static
     {
-        if (!$this->devis->contains($devi)) {
-            $this->devis->add($devi);
+        if (!$this->NoteFrais->contains($devi)) {
+            $this->NoteFrais->add($devi);
             $devi->setTaxe($this);
         }
 
         return $this;
     }
 
-    public function removeDevi(Devis $devi): static
+    public function removeDevi(NoteFrais $devi): static
     {
-        if ($this->devis->removeElement($devi)) {
+        if ($this->NoteFrais->removeElement($devi)) {
             // set the owning side to null (unless already changed)
             if ($devi->getTaxe() === $this) {
                 $devi->setTaxe(null);
