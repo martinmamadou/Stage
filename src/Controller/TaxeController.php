@@ -11,10 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/taxe')]
+
 class TaxeController extends AbstractController
 {
-    #[Route('/', name: 'app_taxe_index', methods: ['GET'])]
+    #[Route('/admin/taxe', name: 'admin.taxe.index', methods: ['GET'])]
     public function index(TaxeRepository $taxeRepository): Response
     {
         return $this->render('taxe/index.html.twig', [
@@ -22,7 +22,7 @@ class TaxeController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_taxe_new', methods: ['GET', 'POST'])]
+    #[Route('admin/taxe/new', name: 'admin.taxe.create', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $taxe = new Taxe();
@@ -42,7 +42,7 @@ class TaxeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_taxe_show', methods: ['GET'])]
+    #[Route('/admin/taxe/{id}', name: 'app_taxe_show', methods: ['GET'])]
     public function show(Taxe $taxe): Response
     {
         return $this->render('taxe/show.html.twig', [
@@ -50,7 +50,7 @@ class TaxeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_taxe_edit', methods: ['GET', 'POST'])]
+    #[Route('/admin/taxe/{id}/edit', name: 'admin.taxe.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Taxe $taxe, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(TaxeType::class, $taxe);
@@ -59,7 +59,7 @@ class TaxeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_taxe_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('taxe.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('taxe/edit.html.twig', [
@@ -76,6 +76,6 @@ class TaxeController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_taxe_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('admin.taxe.index', [], Response::HTTP_SEE_OTHER);
     }
 }

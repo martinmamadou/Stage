@@ -11,10 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/forfait')]
+#[Route('/admin/forfait','admin.forfait')]
 class ForfaitController extends AbstractController
 {
-    #[Route('/', name: 'app_forfait_index', methods: ['GET'])]
+    #[Route('/', name: '.index', methods: ['GET'])]
     public function index(ForfaitRepository $forfaitRepository): Response
     {
         return $this->render('forfait/index.html.twig', [
@@ -22,7 +22,7 @@ class ForfaitController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_forfait_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: '.create', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $forfait = new Forfait();
@@ -33,7 +33,7 @@ class ForfaitController extends AbstractController
             $entityManager->persist($forfait);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_forfait_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('admin.forfait.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('forfait/new.html.twig', [
@@ -42,7 +42,7 @@ class ForfaitController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_forfait_show', methods: ['GET'])]
+    #[Route('/{id}', name: '.show', methods: ['GET'])]
     public function show(Forfait $forfait): Response
     {
         return $this->render('forfait/show.html.twig', [
@@ -50,7 +50,7 @@ class ForfaitController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_forfait_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: '.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Forfait $forfait, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ForfaitType::class, $forfait);
@@ -59,7 +59,7 @@ class ForfaitController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_forfait_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('admin.forfait.index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('forfait/edit.html.twig', [
@@ -68,7 +68,7 @@ class ForfaitController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_forfait_delete', methods: ['POST'])]
+    #[Route('/{id}', name: '.delete', methods: ['POST'])]
     public function delete(Request $request, Forfait $forfait, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$forfait->getId(), $request->getPayload()->get('_token'))) {
@@ -76,6 +76,6 @@ class ForfaitController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_forfait_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('admin.forfait.index', [], Response::HTTP_SEE_OTHER);
     }
 }

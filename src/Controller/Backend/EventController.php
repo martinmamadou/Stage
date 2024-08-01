@@ -60,5 +60,50 @@ class EventController extends AbstractController
         ]);
     }
 
-    
+    #[Route('/{id}/edit','.edit', methods:['GET','POST'])]
+    public function edit(?Event $event,Request $request):Response|RedirectResponse
+    {
+        if (!$event) {
+            $this->addFlash('danger', 'evenement introuvable.');
+
+            return $this->redirectToRoute('admin.event.index');
+        }
+
+        $form = $this->createForm(eventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->em->persist($event);
+            $this->em->flush();
+
+            $this->addFlash('success', 'evenement mis à jour.');
+
+            return $this->redirectToRoute('admin.event.index');
+        }
+
+        return $this->render('Backend/Event/edit.html.twig', [
+            'form' => $form,
+        ]);
+}
+
+#[Route('/{id}/delete', name: '.delete', methods: ['POST'])]
+    public function delete(?Event $event, Request $request): RedirectResponse
+    {
+        if (!$event) {
+            $this->addFlash('danger', 'evenement introuvable.');
+
+            return $this->redirectToRoute('admin.event.index');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $event->getId(), $request->request->get('token'))) {
+            $this->em->remove($event);
+            $this->em->flush();
+
+            $this->addFlash('success', 'evenement supprimé.');
+        } else {
+            $this->addFlash('danger', 'Token CSRF invalide.');
+        }
+
+        return $this->redirectToRoute('admin.event.index');
+    }
 }

@@ -17,15 +17,15 @@
 				{% for client in clients %}
 					<tr>
 						<td>{{client.name}}</td>
-						{#<td scope="col">
+						<td scope="col">
 							<div class="d-flex gap-2">
-								<a href="{{ path('admin.programmes.edit', {id: programme.id}) }}" class="btn btn-primaire">Modifier</a>
-								<form action="{{ path('admin.programmes.delete', {id: programme.id}) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce programme')">
-									<input type="hidden" name="token" value="{{ csrf_token('delete'~ programme.id) }}">
+								<a href="{{ path('admin.client.edit', {id: client.id}) }}" class="btn btn-primaire">Modifier</a>
+								<form action="{{ path('admin.client.delete', {id: client.id}) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client')">
+									<input type="hidden" name="token" value="{{ csrf_token('delete'~ client.id) }}">
 									<button type="submit" class="btn btn-danger">Supprimer</button>
 								</form>
 							</div>
-						</td>#}
+						</td>
 					</tr>
 				{% endfor %}
 			</tbody>

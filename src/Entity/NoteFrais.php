@@ -81,11 +81,9 @@ class NoteFrais
                 $this->totalTTC = 0;  // Default value to avoid null
             }
         } else {
-            $this->totalTTC = $this->km * (1+0.5);
+            $this->totalTTC = $this->km * (1+0.057);
         }
     }
-
-    // Getters and setters...
 
     public function getId(): ?int
     {

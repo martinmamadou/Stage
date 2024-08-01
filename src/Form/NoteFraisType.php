@@ -64,10 +64,6 @@ class NoteFraisType extends AbstractType
                 'label' => 'Km',
                 'required' => false
             ])
-            ->add('prixKm', NumberType::class, [
-                'label' => 'Prix/Km',
-                'required' => false
-            ])
             ->add('taxe', EntityType::class, [
                 'class' => Taxe::class,
                 'label' => 'Taxe',

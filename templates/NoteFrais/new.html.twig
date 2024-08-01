@@ -3,25 +3,27 @@
 {% block title %}New Note de Frais{% endblock %}
 
 {% block body %}
-    <h1>Create new NoteFrais</h1>
-
+    <h1>Creation de NoteFrais</h1>
+    <div id="center-form">
     {{ form_start(form) }}
         {{ form_row(form.titre) }}
         {{ form_row(form.client) }}
         {{ form_row(form.employe) }}
         {{ form_row(form.carte_client) }}
+        {{form_row(form.creation)}}
         {{ form_row(form.categorie) }}
+        
         <div id="dynamic-fields">
             {{ form_row(form.prixHt) }}
             {{ form_row(form.quantite) }}
             {{ form_row(form.km) }}
-            {{ form_row(form.prixKm) }}
             {{ form_row(form.taxe) }}
             {{ form_row(form.forfait) }}
         </div>
-        <button type="submit">Save</button>
+        <button type="submit" class'button btn-secondaire'>Creer</button>
+       
     {{ form_end(form) }}
-
+ </div>
     <script>
        document.addEventListener('DOMContentLoaded', function() {
     let dynamicFieldsContainer = document.getElementById('dynamic-fields');
@@ -43,11 +45,11 @@
         switch (category) {
             case 'Hotel':
                 showField('note_frais_taxe');
+                showField('note_frais_prixHt');
                 showField('note_frais_quantite');
                 break;
             case 'Voiture':
                 showField('note_frais_km');
-                showField('note_frais_prixKm');
                 break;
             case 'forfait':
                 showField('note_frais_forfait');

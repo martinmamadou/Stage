@@ -46,9 +46,55 @@ class SiteController extends AbstractController
             $this->addFlash('succes', 'site ajouter avec succès');
             return $this->redirectToRoute('admin.client.index');
         }
-        return $this->render('Backend/Client/create.html.twig', [
+        return $this->render('Backend/Site/create.html.twig', [
             'sites' => $this->siteRepo->findAll(),
             'form' => $form
         ]);
+    }
+    #[Route('/{id}/edit','.edit', methods:['GET','POST'])]
+    public function edit(?Site $site,Request $request):Response|RedirectResponse
+    {
+        if (!$site) {
+            $this->addFlash('danger', 'site introuvable.');
+
+            return $this->redirectToRoute('admin.site.index');
+        }
+
+        $form = $this->createForm(SiteType::class, $site);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->em->persist($site);
+            $this->em->flush();
+
+            $this->addFlash('success', 'site mis à jour.');
+
+            return $this->redirectToRoute('admin.site.index');
+        }
+
+        return $this->render('Backend/Site/edit.html.twig', [
+            'form' => $form,
+        ]);
+}
+
+#[Route('/{id}/delete', name: '.delete', methods: ['POST'])]
+    public function delete(?Site $site, Request $request): RedirectResponse
+    {
+        if (!$site) {
+            $this->addFlash('danger', 'site introuvable.');
+
+            return $this->redirectToRoute('admin.site.index');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $site->getId(), $request->request->get('token'))) {
+            $this->em->remove($site);
+            $this->em->flush();
+
+            $this->addFlash('success', 'site supprimé.');
+        } else {
+            $this->addFlash('danger', 'Token CSRF invalide.');
+        }
+
+        return $this->redirectToRoute('admin.site.index');
     }
 }

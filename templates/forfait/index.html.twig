@@ -21,8 +21,8 @@
                 <td>{{ forfait.name }}</td>
                 <td>{{ forfait.somme }}</td>
                 <td>
-                    <a href="{{ path('app_forfait_show', {'id': forfait.id}) }}">show</a>
-                    <a href="{{ path('app_forfait_edit', {'id': forfait.id}) }}">edit</a>
+                    <a href="{{ path('admin.forfait.show', {'id': forfait.id}) }}">show</a>
+                    <a href="{{ path('admin.forfait.edit', {'id': forfait.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
@@ -33,5 +33,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_forfait_new') }}">Create new</a>
+    <a href="{{ path('admin.forfait.create') }}">Create new</a>
 {% endblock %}

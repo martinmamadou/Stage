@@ -22,9 +22,9 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_forfait_index') }}">back to list</a>
+    <a href="{{ path('admin.forfait.index') }}">back to list</a>
 
-    <a href="{{ path('app_forfait_edit', {'id': forfait.id}) }}">edit</a>
+    <a href="{{ path('admin.forfait.edit', {'id': forfait.id}) }}">edit</a>
 
     {{ include('forfait/_delete_form.html.twig') }}
 {% endblock %}
